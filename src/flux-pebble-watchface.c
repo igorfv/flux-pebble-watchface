@@ -2,28 +2,69 @@
 #include "pebble_app.h"
 #include "pebble_fonts.h"
 
-
-#define MY_UUID { 0xBB, 0x1D, 0x3E, 0x08, 0x17, 0x26, 0x46, 0x18, 0xBA, 0x99, 0x97, 0xD4, 0x73, 0x55, 0x8F, 0xF4 }
+#define MY_UUID {0x9B, 0xC4, 0xC2, 0x86, 0x42, 0xFE, 0x47, 0xC6, 0xB6, 0x09, 0x80, 0x05, 0xD5, 0xF0, 0x3D, 0x7D}
 PBL_APP_INFO(MY_UUID,
-             "Template App", "Your Company",
+             "Flux", "Igor Vieira",
              1, 0, /* App version */
-             DEFAULT_MENU_ICON,
-             APP_INFO_STANDARD_APP);
+             RESOURCE_ID_IMAGE_MENU_ICON,
+             APP_INFO_WATCH_FACE);
 
 Window window;
+
+Layer layer;
+
+BmpContainer flux_one;
+
+
+void layer_update_callback(Layer *me, GContext* ctx) {
+  (void)me;
+  (void)ctx;
+
+  layer_add_child(&window.layer, &flux_one.layer.layer);
+}
 
 
 void handle_init(AppContextRef ctx) {
   (void)ctx;
 
-  window_init(&window, "Window Name");
+  window_init(&window, "Flux Capacitor");
   window_stack_push(&window, true /* Animated */);
+  window_set_background_color(&window, GColorBlack);
+
+
+  // Init the layer for the minute display
+  layer_init(&layer, window.layer.frame);
+  layer.update_proc = &layer_update_callback;
+  layer_add_child(&window.layer, &layer);
+
+  resource_init_current_app(&APP_RESOURCES);
+
+  // Note: This needs to be "de-inited" in the application's
+  //       deinit handler.
+  bmp_init_container(RESOURCE_ID_IMAGE_FLUX_ONE, &flux_one);
 }
 
 
+void handle_deinit(AppContextRef ctx) {
+  (void)ctx;
+
+  bmp_deinit_container(&flux_one);
+}
+
+
+void handle_minute_tick(AppContextRef ctx, PebbleTickEvent *t) {
+  (void)ctx;
+}
+
 void pbl_main(void *params) {
   PebbleAppHandlers handlers = {
-    .init_handler = &handle_init
+    .init_handler = &handle_init,
+    .deinit_handler = &handle_deinit,
+
+    .tick_info = {
+      .tick_handler = &handle_minute_tick,
+      .tick_units = MINUTE_UNIT
+    }
   };
   app_event_loop(params, &handlers);
 }
