@@ -14,7 +14,7 @@
         },
         {
           "type":"font",
-          "defName":"DIGITAL_26",
+          "defName":"FONT_DIGITAL_26",
           "file":"fonts/DIGITAL_26.ttf"
         }
  ]
