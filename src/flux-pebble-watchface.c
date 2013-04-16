@@ -15,6 +15,7 @@ Layer bg_layer;
 Layer animation_layer;
 Layer top_layer;
 
+TextLayer text_time_layer;
 
 BmpContainer flux_one;
 
@@ -48,6 +49,15 @@ void handle_init(AppContextRef ctx) {
   layer_add_child(&window.layer, &top_layer);
 
 
+  //Clock text
+  text_layer_init(&text_time_layer, GRect(35, 65, 74, 30));
+  text_layer_set_text_color(&text_time_layer, GColorWhite);
+  text_layer_set_background_color(&text_time_layer, GColorClear);
+  text_layer_set_font(&text_time_layer, fonts_load_custom_font(resource_get_handle(RESOURCE_ID_FONT_DIGITAL_26)));
+  //text_layer_set_font(&text_time_layer, fonts_get_system_font(FONT_KEY_GOTHIC_28_BOLD));
+  text_layer_set_text_alignment(&text_time_layer, GTextAlignmentCenter);
+  text_layer_set_text(&text_time_layer, "00:00");
+  layer_add_child(&top_layer, &text_time_layer.layer);
 }
 
 
@@ -60,6 +70,24 @@ void handle_deinit(AppContextRef ctx) {
 
 void handle_minute_tick(AppContextRef ctx, PebbleTickEvent *t) {
   (void)ctx;
+
+  //Time
+  static char time_text[] = "00:00";
+  char *time_format;
+
+  if (clock_is_24h_style()) {
+    time_format = "%R";
+  } else {
+    time_format = "%I:%M";
+  }
+
+  string_format_time(time_text, sizeof(time_text), time_format, t->tick_time);
+
+  if (!clock_is_24h_style() && (time_text[0] == '0')) {
+    memmove(time_text, &time_text[1], sizeof(time_text) - 1);
+  }
+
+  text_layer_set_text(&text_time_layer, time_text);
 }
 
 void pbl_main(void *params) {
