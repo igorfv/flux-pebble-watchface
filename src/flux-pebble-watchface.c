@@ -11,16 +11,17 @@ PBL_APP_INFO(MY_UUID,
 
 Window window;
 
-Layer layer;
+Layer bg_layer;
+Layer animation_layer;
+Layer top_layer;
+
 
 BmpContainer flux_one;
 
 
-void layer_update_callback(Layer *me, GContext* ctx) {
+void animationlayer_update_callback(Layer *me, GContext* ctx) {
   (void)me;
   (void)ctx;
-
-  layer_add_child(&window.layer, &flux_one.layer.layer);
 }
 
 
@@ -31,17 +32,22 @@ void handle_init(AppContextRef ctx) {
   window_stack_push(&window, true /* Animated */);
   window_set_background_color(&window, GColorBlack);
 
-
   // Init the layer for the minute display
-  layer_init(&layer, window.layer.frame);
-  layer.update_proc = &layer_update_callback;
-  layer_add_child(&window.layer, &layer);
+  layer_init(&bg_layer, window.layer.frame);
+  bg_layer.update_proc = &animationlayer_update_callback;
+  layer_add_child(&window.layer, &bg_layer);
 
   resource_init_current_app(&APP_RESOURCES);
-
-  // Note: This needs to be "de-inited" in the application's
-  //       deinit handler.
   bmp_init_container(RESOURCE_ID_IMAGE_FLUX_ONE, &flux_one);
+
+  //Background
+  layer_add_child(&bg_layer, &flux_one.layer.layer);
+
+  //Z-Index
+  layer_add_child(&bg_layer, &animation_layer);
+  layer_add_child(&window.layer, &top_layer);
+
+
 }
 
 
