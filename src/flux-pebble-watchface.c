@@ -39,32 +39,43 @@ void animationlayer_update_callback(Layer *me, GContext* ctx) {
   PblTm t;
   get_time(&t);
 
-  if(t.tm_min != 0) return;
 
-  switch(t.tm_sec)
+  if(t.tm_sec < 45)
   {
-    case 0:   graphics_draw_bitmap_in_rect(ctx, &flux_two.bmp, GRect(0, 0, 144, 168));
-              break;
-    case 2:   graphics_draw_bitmap_in_rect(ctx, &flux_two.bmp, GRect(0, 0, 144, 168));
-              break;
-    case 3:   graphics_draw_bitmap_in_rect(ctx, &flux_three.bmp, GRect(0, 0, 144, 168));
-              break;
-    case 4:   graphics_draw_bitmap_in_rect(ctx, &flux_two.bmp, GRect(0, 0, 144, 168));
-              break;
-    case 5:   graphics_draw_bitmap_in_rect(ctx, &flux_three.bmp, GRect(0, 0, 144, 168));
-              break;
-    case 6:   graphics_draw_bitmap_in_rect(ctx, &flux_four.bmp, GRect(0, 0, 144, 168));
-              break;
-    case 7:   graphics_draw_bitmap_in_rect(ctx, &flux_three.bmp, GRect(0, 0, 144, 168));
-              break;
-    case 8:   graphics_draw_bitmap_in_rect(ctx, &flux_four.bmp, GRect(0, 0, 144, 168));
-              break;
-    case 9:   graphics_draw_bitmap_in_rect(ctx, &flux_three.bmp, GRect(0, 0, 144, 168));
-              break;
-    case 10:  graphics_draw_bitmap_in_rect(ctx, &flux_two.bmp, GRect(0, 0, 144, 168));
-              break;
-    case 12:  graphics_draw_bitmap_in_rect(ctx, &flux_two.bmp, GRect(0, 0, 144, 168));
-              break;
+    switch(t.tm_sec)
+    {
+      case 0:   graphics_draw_bitmap_in_rect(ctx, &flux_four.bmp, GRect(0, 0, 144, 168)); break;
+      case 1:   graphics_draw_bitmap_in_rect(ctx, &flux_three.bmp, GRect(0, 0, 144, 168)); break;
+      case 2:   graphics_draw_bitmap_in_rect(ctx, &flux_two.bmp, GRect(0, 0, 144, 168)); break;
+      default:  if(t.tm_sec%2 == 0)
+                {
+                  graphics_draw_bitmap_in_rect(ctx, &flux_two.bmp, GRect(0, 0, 144, 168));
+                }
+                break;
+    }
+    
+  }
+  else if(t.tm_sec < 59)
+  {
+    if(t.tm_sec%2 == 0)
+    {
+      graphics_draw_bitmap_in_rect(ctx, &flux_two.bmp, GRect(0, 0, 144, 168));
+    }
+    else
+    {
+      graphics_draw_bitmap_in_rect(ctx, &flux_three.bmp, GRect(0, 0, 144, 168));
+    }
+  }
+  else
+  {
+    if(t.tm_sec%2 == 0)
+    {
+      graphics_draw_bitmap_in_rect(ctx, &flux_three.bmp, GRect(0, 0, 144, 168));
+    }
+    else
+    {
+      graphics_draw_bitmap_in_rect(ctx, &flux_four.bmp, GRect(0, 0, 144, 168));
+    }
   }
 }
 
