@@ -40,42 +40,37 @@ void animationlayer_update_callback(Layer *me, GContext* ctx) {
   get_time(&t);
 
 
-  if(t.tm_sec < 45)
+  if(t.tm_sec < 30)
   {
     switch(t.tm_sec)
     {
       case 0:   graphics_draw_bitmap_in_rect(ctx, &flux_four.bmp, GRect(0, 0, 144, 168)); break;
       case 1:   graphics_draw_bitmap_in_rect(ctx, &flux_three.bmp, GRect(0, 0, 144, 168)); break;
       case 2:   graphics_draw_bitmap_in_rect(ctx, &flux_two.bmp, GRect(0, 0, 144, 168)); break;
-      default:  if(t.tm_sec%2 == 0)
-                {
-                  graphics_draw_bitmap_in_rect(ctx, &flux_two.bmp, GRect(0, 0, 144, 168));
-                }
-                break;
     }
     
+  }
+  else if(t.tm_sec < 44)
+  {
+    if(t.tm_sec%2 != 0)
+    {
+      graphics_draw_bitmap_in_rect(ctx, &flux_two.bmp, GRect(0, 0, 144, 168));
+    }
   }
   else if(t.tm_sec < 59)
   {
     if(t.tm_sec%2 == 0)
     {
-      graphics_draw_bitmap_in_rect(ctx, &flux_two.bmp, GRect(0, 0, 144, 168));
+      graphics_draw_bitmap_in_rect(ctx, &flux_three.bmp, GRect(0, 0, 144, 168));
     }
     else
     {
-      graphics_draw_bitmap_in_rect(ctx, &flux_three.bmp, GRect(0, 0, 144, 168));
+      graphics_draw_bitmap_in_rect(ctx, &flux_two.bmp, GRect(0, 0, 144, 168));
     }
   }
   else
   {
-    if(t.tm_sec%2 == 0)
-    {
-      graphics_draw_bitmap_in_rect(ctx, &flux_three.bmp, GRect(0, 0, 144, 168));
-    }
-    else
-    {
-      graphics_draw_bitmap_in_rect(ctx, &flux_four.bmp, GRect(0, 0, 144, 168));
-    }
+    graphics_draw_bitmap_in_rect(ctx, &flux_four.bmp, GRect(0, 0, 144, 168));
   }
 }
 
