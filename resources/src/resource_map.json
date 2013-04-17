@@ -9,6 +9,21 @@
         },
         {
           "type": "png",
+          "defName": "IMAGE_FLUX_TWO",
+          "file": "images/flux2.png"
+        },
+        {
+          "type": "png",
+          "defName": "IMAGE_FLUX_THREE",
+          "file": "images/flux3.png"
+        },
+        {
+          "type": "png",
+          "defName": "IMAGE_FLUX_FOUR",
+          "file": "images/flux4.png"
+        },
+        {
+          "type": "png",
           "defName": "IMAGE_MENU_ICON",
           "file": "images/menu_icon.png"
         },

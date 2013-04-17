@@ -18,11 +18,54 @@ Layer top_layer;
 TextLayer text_time_layer;
 
 BmpContainer flux_one;
+BmpContainer flux_two;
+BmpContainer flux_three;
+BmpContainer flux_four;
+
+
+void toplayer_update_callback(Layer *me, GContext* ctx) {
+  (void)me;
+  (void)ctx;
+
+  graphics_context_set_fill_color(ctx, GColorBlack);
+  graphics_fill_rect(ctx, GRect(35,67, 75, 29), 0, GCornerNone);
+}
 
 
 void animationlayer_update_callback(Layer *me, GContext* ctx) {
   (void)me;
   (void)ctx;
+
+  PblTm t;
+  get_time(&t);
+
+  if(t.tm_min != 0) return;
+
+  switch(t.tm_sec)
+  {
+    case 0:   graphics_draw_bitmap_in_rect(ctx, &flux_two.bmp, GRect(0, 0, 144, 168));
+              break;
+    case 2:   graphics_draw_bitmap_in_rect(ctx, &flux_two.bmp, GRect(0, 0, 144, 168));
+              break;
+    case 3:   graphics_draw_bitmap_in_rect(ctx, &flux_three.bmp, GRect(0, 0, 144, 168));
+              break;
+    case 4:   graphics_draw_bitmap_in_rect(ctx, &flux_two.bmp, GRect(0, 0, 144, 168));
+              break;
+    case 5:   graphics_draw_bitmap_in_rect(ctx, &flux_three.bmp, GRect(0, 0, 144, 168));
+              break;
+    case 6:   graphics_draw_bitmap_in_rect(ctx, &flux_four.bmp, GRect(0, 0, 144, 168));
+              break;
+    case 7:   graphics_draw_bitmap_in_rect(ctx, &flux_three.bmp, GRect(0, 0, 144, 168));
+              break;
+    case 8:   graphics_draw_bitmap_in_rect(ctx, &flux_four.bmp, GRect(0, 0, 144, 168));
+              break;
+    case 9:   graphics_draw_bitmap_in_rect(ctx, &flux_three.bmp, GRect(0, 0, 144, 168));
+              break;
+    case 10:  graphics_draw_bitmap_in_rect(ctx, &flux_two.bmp, GRect(0, 0, 144, 168));
+              break;
+    case 12:  graphics_draw_bitmap_in_rect(ctx, &flux_two.bmp, GRect(0, 0, 144, 168));
+              break;
+  }
 }
 
 
@@ -35,18 +78,22 @@ void handle_init(AppContextRef ctx) {
 
   // Init the layer for the minute display
   layer_init(&bg_layer, window.layer.frame);
-  bg_layer.update_proc = &animationlayer_update_callback;
   layer_add_child(&window.layer, &bg_layer);
 
   resource_init_current_app(&APP_RESOURCES);
   bmp_init_container(RESOURCE_ID_IMAGE_FLUX_ONE, &flux_one);
+  bmp_init_container(RESOURCE_ID_IMAGE_FLUX_TWO, &flux_two);
+  bmp_init_container(RESOURCE_ID_IMAGE_FLUX_THREE, &flux_three);
+  bmp_init_container(RESOURCE_ID_IMAGE_FLUX_FOUR, &flux_four);
 
   //Background
   layer_add_child(&bg_layer, &flux_one.layer.layer);
 
   //Z-Index
   layer_add_child(&bg_layer, &animation_layer);
+  animation_layer.update_proc = &animationlayer_update_callback;
   layer_add_child(&window.layer, &top_layer);
+  top_layer.update_proc = &toplayer_update_callback;
 
 
   //Clock text
@@ -54,7 +101,6 @@ void handle_init(AppContextRef ctx) {
   text_layer_set_text_color(&text_time_layer, GColorWhite);
   text_layer_set_background_color(&text_time_layer, GColorClear);
   text_layer_set_font(&text_time_layer, fonts_load_custom_font(resource_get_handle(RESOURCE_ID_FONT_DIGITAL_26)));
-  //text_layer_set_font(&text_time_layer, fonts_get_system_font(FONT_KEY_GOTHIC_28_BOLD));
   text_layer_set_text_alignment(&text_time_layer, GTextAlignmentCenter);
   text_layer_set_text(&text_time_layer, "00:00");
   layer_add_child(&top_layer, &text_time_layer.layer);
@@ -65,11 +111,17 @@ void handle_deinit(AppContextRef ctx) {
   (void)ctx;
 
   bmp_deinit_container(&flux_one);
+  bmp_deinit_container(&flux_two);
+  bmp_deinit_container(&flux_three);
+  bmp_deinit_container(&flux_four);
 }
 
 
 void handle_minute_tick(AppContextRef ctx, PebbleTickEvent *t) {
   (void)ctx;
+
+  //Redraw layer
+  layer_mark_dirty(&animation_layer);
 
   //Time
   static char time_text[] = "00:00";
@@ -97,7 +149,7 @@ void pbl_main(void *params) {
 
     .tick_info = {
       .tick_handler = &handle_minute_tick,
-      .tick_units = MINUTE_UNIT
+      .tick_units = SECOND_UNIT
     }
   };
   app_event_loop(params, &handlers);
